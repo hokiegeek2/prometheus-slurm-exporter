@@ -16,13 +16,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package main
 
 import (
-	"log"
+	//"log"
 	"os/exec"
 	"sort"
 	"strconv"
 	"strings"
-
+        //"fmt"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/common/log"
 )
 
 // NodeMetrics stores metrics for each node
@@ -49,9 +50,9 @@ func ParseNodeMetrics(input []byte) map[string]*NodeMetrics {
 	// Sort and remove all the duplicates from the 'sinfo' output
 	sort.Strings(lines)
 	linesUniq := RemoveDuplicates(lines)
-
 	for _, line := range linesUniq {
 		node := strings.Fields(line)
+		log.Infof("sinfo fields: %v", node)
 		nodeName := node[0]
 		nodeStatus := node[4] // mixed, allocated, etc.
 
