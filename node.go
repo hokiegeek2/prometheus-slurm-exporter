@@ -53,28 +53,30 @@ func ParseNodeMetrics(input []byte) map[string]*NodeMetrics {
 	for _, line := range linesUniq {
 		node := strings.Fields(line)
 		log.Infof("sinfo fields: %v", node)
-		nodeName := node[0]
-		nodeStatus := node[4] // mixed, allocated, etc.
+		if  len(node) > 0 {
+		    nodeName := node[0]
+		    nodeStatus := node[4] // mixed, allocated, etc.
 
-		nodes[nodeName] = &NodeMetrics{0, 0, 0, 0, 0, 0, ""}
+		    nodes[nodeName] = &NodeMetrics{0, 0, 0, 0, 0, 0, ""}
 
-		memAlloc, _ := strconv.ParseUint(node[1], 10, 64)
-		memTotal, _ := strconv.ParseUint(node[2], 10, 64)
+		    memAlloc, _ := strconv.ParseUint(node[1], 10, 64)
+		    memTotal, _ := strconv.ParseUint(node[2], 10, 64)
 
 
-		cpuInfo := strings.Split(node[3], "/")
-		cpuAlloc, _ := strconv.ParseUint(cpuInfo[0], 10, 64)
-		cpuIdle, _ := strconv.ParseUint(cpuInfo[1], 10, 64)
-		cpuOther, _ := strconv.ParseUint(cpuInfo[2], 10, 64)
-		cpuTotal, _ := strconv.ParseUint(cpuInfo[3], 10, 64)
+		    cpuInfo := strings.Split(node[3], "/")
+		    cpuAlloc, _ := strconv.ParseUint(cpuInfo[0], 10, 64)
+		    cpuIdle, _ := strconv.ParseUint(cpuInfo[1], 10, 64)
+		    cpuOther, _ := strconv.ParseUint(cpuInfo[2], 10, 64)
+		    cpuTotal, _ := strconv.ParseUint(cpuInfo[3], 10, 64)
 
-		nodes[nodeName].memAlloc = memAlloc
-		nodes[nodeName].memTotal = memTotal
-		nodes[nodeName].cpuAlloc = cpuAlloc
-		nodes[nodeName].cpuIdle = cpuIdle
-		nodes[nodeName].cpuOther = cpuOther
-		nodes[nodeName].cpuTotal = cpuTotal
-		nodes[nodeName].nodeStatus = nodeStatus
+		    nodes[nodeName].memAlloc = memAlloc
+		    nodes[nodeName].memTotal = memTotal
+		    nodes[nodeName].cpuAlloc = cpuAlloc
+		    nodes[nodeName].cpuIdle = cpuIdle
+		    nodes[nodeName].cpuOther = cpuOther
+		    nodes[nodeName].cpuTotal = cpuTotal
+		    nodes[nodeName].nodeStatus = nodeStatus
+		}
 	}
 
 	return nodes
