@@ -19,21 +19,26 @@ import (
 	"flag"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/prometheus/common/log"
+	"log"
 	"net/http"
+	"prometheus-slurm-exporter/account"
+	"prometheus-slurm-exporter/allocation"
+	"prometheus-slurm-exporter/compute"
+	"prometheus-slurm-exporter/schedule"
+	"strconv"
 )
 
 func init() {
 	// Metrics have to be registered to be exposed
-	prometheus.MustRegister(NewAccountsCollector())       // from accounts.go
-	prometheus.MustRegister(NewCPUsCollector())           // from cpus.go
-	prometheus.MustRegister(NewNodesCollector())          // from nodes.go
-	prometheus.MustRegister(NewNodeCollector())           // from node.go
-	prometheus.MustRegister(NewPartitionsCollector())     // from partitions.go
-	prometheus.MustRegister(NewQueueCollector())          // from queue.go
-	prometheus.MustRegister(NewSchedulerCollector())      // from scheduler.go
-	prometheus.MustRegister(NewFairShareCollector())      // from sshare.go
-	prometheus.MustRegister(NewUsersCollector())          // from users.go
+	prometheus.MustRegister(account.NewAccountsCollector())      // from accounts.go
+	prometheus.MustRegister(compute.NewCPUsCollector())          // from compute.go
+	prometheus.MustRegister(allocation.NewNodesCollector())      // from nodes.go
+	prometheus.MustRegister(allocation.NewNodeCollector())       // from node.go
+	prometheus.MustRegister(allocation.NewPartitionsCollector()) // from partitions.go
+	prometheus.MustRegister(schedule.NewQueueCollector())        // from queue.go
+	prometheus.MustRegister(schedule.NewSchedulerCollector())    // from scheduler.go
+	prometheus.MustRegister(allocation.NewFairShareCollector())  // from sshare.go
+	prometheus.MustRegister(account.NewUsersCollector())         // from users.go
 }
 
 var listenAddress = flag.String(
@@ -51,13 +56,15 @@ func main() {
 
 	// Turn on GPUs accounting only if the corresponding command line option is set to true.
 	if *gpuAcct {
-		prometheus.MustRegister(NewGPUsCollector())   // from gpus.go
+		prometheus.MustRegister(compute.NewGPUsCollector()) // from gpus.go
 	}
 
 	// The Handler function provides a default handler to expose metrics
 	// via an HTTP server. "/metrics" is the usual endpoint for that.
-	log.Infof("Starting Server: %s", *listenAddress)
-	log.Infof("GPUs Accounting: %t", *gpuAcct)
+
+	log.Println("Starting Server: %s", *listenAddress)
+	log.Println("GPUs Accounting: %b", strconv.FormatBool(*gpuAcct))
 	http.Handle("/metrics", promhttp.Handler())
 	log.Fatal(http.ListenAndServe(*listenAddress, nil))
+	//http.ListenAndServe(*listenAddress, nil)
 }
