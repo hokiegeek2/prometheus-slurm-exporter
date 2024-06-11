@@ -13,15 +13,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
-package main
+package compute
 
 import (
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/common/log"
 	"io/ioutil"
+	"log"
 	"os/exec"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 type GPUsMetrics struct {
@@ -66,7 +66,7 @@ func ParseTotalGPUs() float64 {
 				descriptor := strings.Fields(line)[1]
 				descriptor = strings.TrimPrefix(descriptor, "gpu:")
 				descriptor = strings.Split(descriptor, "(")[0]
-				node_gpus, _ :=  strconv.ParseFloat(descriptor, 64)
+				node_gpus, _ := strconv.ParseFloat(descriptor, 64)
 				num_gpus += node_gpus
 			}
 		}
@@ -111,9 +111,9 @@ func Execute(command string, arguments []string) []byte {
 
 func NewGPUsCollector() *GPUsCollector {
 	return &GPUsCollector{
-		alloc: prometheus.NewDesc("slurm_gpus_alloc", "Allocated GPUs", nil, nil),
-		idle:  prometheus.NewDesc("slurm_gpus_idle", "Idle GPUs", nil, nil),
-		total: prometheus.NewDesc("slurm_gpus_total", "Total GPUs", nil, nil),
+		alloc:       prometheus.NewDesc("slurm_gpus_alloc", "Allocated GPUs", nil, nil),
+		idle:        prometheus.NewDesc("slurm_gpus_idle", "Idle GPUs", nil, nil),
+		total:       prometheus.NewDesc("slurm_gpus_total", "Total GPUs", nil, nil),
 		utilization: prometheus.NewDesc("slurm_gpus_utilization", "Total GPU utilization", nil, nil),
 	}
 }
